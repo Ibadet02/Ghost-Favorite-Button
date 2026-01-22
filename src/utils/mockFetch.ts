@@ -5,7 +5,7 @@ const mockFetch = (): Promise<"success" | "fail"> => {
     setTimeout(() => {
       if (isSuccesful) resolve("success");
       else reject("fail");
-    }, 5000);
+    }, 1000);
   });
 };
 

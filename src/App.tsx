@@ -1,21 +1,36 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import mockFetch from "./utils/mockFetch";
 
 function App() {
-  const [count, setCount] = useState(0);
+  const [liked, setLiked] = useState(false);
+  const lastSuccesState = useRef(false);
+  const lastRequestId = useRef(0);
 
-  const handleCount = async () => {
-    setCount(prev => prev + 1);
+  const toggleLiked = async () => {
+    lastRequestId.current++;
+    const currentId = lastRequestId.current;
+
+    let nextState;
+    setLiked((prev) => {
+      nextState = !prev;
+
+      return nextState;
+    });
+
     try {
       await mockFetch();
+
+      lastSuccesState.current = nextState!;
     } catch (err) {
-      setCount(prev => prev - 1);
+      if (currentId === lastRequestId.current) {
+        setLiked(lastSuccesState.current);
+      }
       console.log(err);
     }
   };
   return (
     <div>
-      <button onClick={handleCount}>like {count} times</button>
+      <button onClick={toggleLiked}>{liked ? "Liked" : "Not Liked"}</button>
     </div>
   );
 }
